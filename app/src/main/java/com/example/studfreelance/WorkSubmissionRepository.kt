@@ -44,6 +44,28 @@ object WorkSubmissionRepository {
             saveToDisk()
         }
     }
+    fun clearAll() {
+        _submissions.clear()
+        if (::prefs.isInitialized) {
+            prefs.edit().clear().apply()
+        }
+        // Dummy submission untuk Edit Video Dokumentasi (id=3)
+        _submissions.add(
+            WorkSubmission(
+                id             = "sub_dummy_3",
+                jobId          = 3,
+                jobTitle       = "Edit Video Dokumentasi",
+                freelancerId   = "dummy",
+                freelancerName = "Dummy Freelancer",
+                description    = "Video sudah diedit sesuai permintaan.",
+                submittedAt    = "10:00, 01 Jun",
+                status         = "paid",
+                rating         = 4,
+                review         = "Hasil edit bagus dan tepat waktu!"
+            )
+        )
+        saveToDisk()
+    }
 
     private fun saveToDisk() {
         if (!::prefs.isInitialized) return

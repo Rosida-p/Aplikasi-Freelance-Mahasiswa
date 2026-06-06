@@ -31,10 +31,9 @@ import com.example.studfreelance.JobApplication
 import com.example.studfreelance.JobRepository
 import com.example.studfreelance.LoginActivity
 import com.example.studfreelance.WorkSubmissionRepository
+import androidx.compose.material.icons.outlined.StarOutline
 
-// ──────────────────────────────────────────────
 // WARNA TEMA FREELANCER
-// ──────────────────────────────────────────────
 val FlPrimary    = Color(0xFF0D47A1)
 val FlAccent     = Color(0xFF00897B)
 val FlAccentSoft = Color(0xFFE0F2F1)
@@ -150,11 +149,12 @@ fun FreelancerBottomNav(
 @Composable
 fun FreelancerHomeTab(
     refreshKey: Int = 0,
-    onAvatarClick: () -> Unit = {}       // ← parameter baru
+    onAvatarClick: () -> Unit = {}
+
 ) {
     val profile    = FreelancerProfileRepository.getProfile()
     val allJobs    = remember(refreshKey) { JobRepository.getAllJobs() }
-    val activeJobs = allJobs.filter { it.status == "active" }
+    val activeJobs = allJobs.filter { it.status == "active" || it.status == "review" }
     val doneJobs   = allJobs.filter { it.status == "done" }
 
     val notifications = remember(refreshKey) { ApplicationRepository.getFreelancerNotifications() }
@@ -304,7 +304,7 @@ fun FreelancerJobsTab(refreshKey: Int = 0) {
     val filtered = when (selectedFilter) {
         "Aktif"   -> allJobs.filter { it.status == "active" }
         "Selesai" -> allJobs.filter { it.status == "done" }
-        "Review"  -> allJobs.filter { it.status == "review" }
+        "Review"  -> allJobs.filter { it.status == "done" }
         else      -> allJobs
     }
 
@@ -341,10 +341,78 @@ fun FreelancerJobsTab(refreshKey: Int = 0) {
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(filtered) { job ->
-                    JobCardFreelancer(job = job, profile = profile)
+                    val submission = WorkSubmissionRepository.getSubmissionByJob(job.id)
+                    if (selectedFilter == "Review" && submission != null && submission.rating > 0) {
+                        RatingCardFreelancer(job = job, submission = submission)
+                    } else {
+                        JobCardFreelancer(job = job, profile = profile)
+                    }
                 }
                 item { Spacer(Modifier.height(16.dp)) }
             }
+        }
+    }
+}
+
+@Composable
+fun RatingCardFreelancer(
+    job: com.example.studfreelance.Client.PostedJob,
+    submission: com.example.studfreelance.WorkSubmission
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = FlCard),
+        elevation = CardDefaults.cardElevation(3.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(job.judul, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = FlTextMain)
+            Spacer(Modifier.height(4.dp))
+            Surface(shape = RoundedCornerShape(6.dp), color = FlAccentSoft) {
+                Text(job.kategori, modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp), color = FlAccent, fontSize = 11.sp)
+            }
+            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(color = Color(0xFFF0F2F8))
+            Spacer(Modifier.height(12.dp))
+
+            Text("Penilaian Client", fontSize = 12.sp, color = FlTextSub)
+            Spacer(Modifier.height(6.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                repeat(5) { index ->
+                    Icon(
+                        imageVector = if (index < submission.rating) Icons.Filled.Star
+                        else Icons.Outlined.StarOutline,
+                        contentDescription = null,
+                        tint = if (index < submission.rating) Color(0xFFFFC107) else Color(0xFFBBBBBB),
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    "${submission.rating}/5",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color(0xFFFFC107)
+                )
+            }
+
+            if (submission.review.isNotBlank()) {
+                Spacer(Modifier.height(10.dp))
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = Color(0xFFF4F6FB)
+                ) {
+                    Row(modifier = Modifier.padding(12.dp)) {
+                        Icon(Icons.Default.FormatQuote, null, tint = FlPrimary, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text(submission.review, fontSize = 13.sp, color = FlTextSub, lineHeight = 20.sp)
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(10.dp))
+            Text("Selesai • ${submission.submittedAt}", fontSize = 11.sp, color = FlTextSub)
         }
     }
 }
@@ -390,7 +458,8 @@ fun JobCardFreelancer(
     job: PostedJob,
     profile: FreelancerProfile,
     modifier: Modifier = Modifier,
-    onRefresh: () -> Unit = {}
+    onRefresh: () -> Unit = {},
+    refreshKey: Int = 0
 ) {
     var applicationStatus by remember(job.id, profile.id) {
         mutableStateOf(ApplicationRepository.getApplicationStatus(job.id, profile.id))
@@ -483,8 +552,7 @@ fun JobCardFreelancer(
                     }
                     ApplicationStatus.ACCEPTED -> {
                         val context = LocalContext.current
-                        val submission = remember { WorkSubmissionRepository.getSubmissionByJob(job.id) }
-
+                        val submission = remember(refreshKey) { WorkSubmissionRepository.getSubmissionByJob(job.id) }
                         Column {
                             Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), color = Color(0xFFE8F5E9)) {
                                 Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {

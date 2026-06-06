@@ -317,9 +317,7 @@ fun DashboardClientScreen(
     }
 }
 
-// =============================================
 // KOMPONEN: KARTU STATISTIK
-// =============================================
 @Composable
 fun StatCard(
     modifier: Modifier = Modifier,
@@ -452,9 +450,7 @@ fun PostedJobCard(
         }
     }
 }
-// =============================================
 // KOMPONEN: CHIP INFO KECIL
-// =============================================
 @Composable
 fun InfoChip(icon: ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
