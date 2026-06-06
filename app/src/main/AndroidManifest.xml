@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".MyApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.STUDFREELANCE">
+
+        <!-- Launcher utama: Login -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".RegisterActivity" />
+
+        <!-- Client -->
+        <activity android:name=".Client.DashboardClientActivity" />
+        <activity android:name=".Client.PostJobActivity" />
+        <activity android:name=".Client.PostJobSuccessActivity" />
+        <activity android:name=".Client.ApplicantListActivity" />
+        <activity android:name=".Client.ApplicantDetailActivity" />
+        <activity android:name=".Client.JobProgressActivity" />
+
+        <!-- Freelancer -->
+        <activity android:name=".Freelancer.FreelancerDashboardActivity" />
+        <activity android:name=".Freelancer.UploadResultActivity" />
+        <activity android:name=".Freelancer.JobFinishedActivity" />
+
+        <activity android:name=".Client.RatingActivity" />
+        <activity android:name=".Client.PaymentActivity" />
+    </application>
+</manifest>

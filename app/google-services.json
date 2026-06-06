@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "390714013587",
+    "project_id": "studfreelance-57219",
+    "storage_bucket": "studfreelance-57219.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390714013587:android:019b4e1ac6159a4c359a66",
+        "android_client_info": {
+          "package_name": "com.example.studfreelance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKW0VjCRRaegutxGQiRWYx7cezD5cw7zg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
